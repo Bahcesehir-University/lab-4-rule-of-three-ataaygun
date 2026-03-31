@@ -42,6 +42,10 @@ void resetAllCounters() {
 // ============================================================================
 // CLASS DEFINITION: DynamicBuffer
 // ============================================================================
+// This class manages a dynamically allocated C-string (char array).
+// It demonstrates the "Rule of Three": if a class manages a resource,
+// you must define a destructor, copy constructor, and copy assignment operator.
+// ============================================================================
 
 class DynamicBuffer {
 private:
@@ -52,43 +56,78 @@ public:
     // --------------------------------------------------
     // Parameterized Constructor
     // --------------------------------------------------
+    // - Allocate memory for a copy of the input string
+    // - Copy the string content into m_data
+    // - Set m_length to the length of the string
+    // - Increment g_constructorCount
     DynamicBuffer(const char* input) {
+        // TODO: Implement constructor
+        //   1. Increment g_constructorCount
         g_constructorCount++;
+        //   2. Calculate length of input using strlen()
         m_length = strlen(input);
-        m_data = new char[m_length + 1];
-        strcpy(m_data, input);
+        //   3. Allocate m_data with new char[m_length + 1]
+        m_data = new char[m_length + 1 ];
+        //   4. Copy input into m_data using strcpy()
+        strcpy(m_data , input);
     }
 
     // --------------------------------------------------
     // Destructor
     // --------------------------------------------------
+    // - Free the dynamically allocated memory
+    // - Increment g_destructorCount
     ~DynamicBuffer() {
-        g_destructorCount++;
+        // TODO: Implement destructor
+        //   1. Increment g_destructorCount
+        g_constructorCount++;
+        //   2. Delete the dynamically allocated array (delete[])
         delete[] m_data;
     }
 
     // --------------------------------------------------
     // Copy Constructor (Deep Copy)
     // --------------------------------------------------
+    // - Allocate NEW memory for this object
+    // - Copy the content from 'other' into the new memory
+    // - Increment g_copyConstructorCount
     DynamicBuffer(const DynamicBuffer& other) {
-        g_copyConstructorCount++;
-        m_length = other.m_length;
+        // TODO: Implement copy constructor
+        //   1. Increment g_copyConstructorCount
+        g_constructorCount++;
+        //   2. Copy m_length from other
+        m_length = other.getLength();
+        //   3. Allocate new memory: new char[m_length + 1]
         m_data = new char[m_length + 1];
-        strcpy(m_data, other.m_data);
+        //   4. Copy string data using strcpy()
+        strcpy(m_data,other.getData());
     }
 
     // --------------------------------------------------
     // Copy Assignment Operator (Deep Copy)
     // --------------------------------------------------
+    // - Check for self-assignment
+    // - Free existing memory
+    // - Allocate new memory and copy content from 'other'
+    // - Increment g_assignmentCount
+    // - Return *this
     DynamicBuffer& operator=(const DynamicBuffer& other) {
-        g_assignmentCount++;
-        if (this == &other) {
+        // TODO: Implement copy assignment operator
+        //   1. Increment g_assignmentCount
+        g_constructorCount++;
+        //   2. Check for self-assignment (if this == &other)
+        if (this == &other){
             return *this;
         }
+        //   3. Delete old m_data (delete[])
         delete[] m_data;
+        //   4. Copy m_length from other
         m_length = other.m_length;
+        //   5. Allocate new memory: new char[m_length + 1]
         m_data = new char[m_length + 1];
-        strcpy(m_data, other.m_data);
+        //   6. Copy string data using strcpy()
+        strcpy(m_data , other.m_data);
+        //   7. Return *this
         return *this;
     }
 
@@ -101,11 +140,19 @@ public:
     // --------------------------------------------------
     // setData - replace the buffer with a new string
     // --------------------------------------------------
+    // - Free old memory
+    // - Allocate new memory for the new string
+    // - Copy the new string
     void setData(const char* newData) {
+        // TODO: Implement setData
+        //   1. Delete old m_data (delete[])
         delete[] m_data;
+        //   2. Calculate new length with strlen()
         m_length = strlen(newData);
+        //   3. Allocate new memory: new char[m_length + 1]
         m_data = new char[m_length + 1];
-        strcpy(m_data, newData);
+        //   4. Copy newData into m_data using strcpy()
+        strcpy(m_data , newData);
     }
 
     // --------------------------------------------------
@@ -119,6 +166,8 @@ public:
 // ============================================================================
 // FREE FUNCTION: createBufferCopy
 // ============================================================================
+// This function takes a DynamicBuffer BY VALUE (triggers copy constructor)
+// and returns it BY VALUE (may trigger copy or move).
 // DO NOT MODIFY this function.
 
 DynamicBuffer createBufferCopy(DynamicBuffer buf) {
